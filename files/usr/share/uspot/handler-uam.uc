@@ -16,10 +16,13 @@ function auth_client(ctx) {
 	let password;
 	let challenge;
 	let payload = {};
-	
-	if (!ctx.query_string)
-		ctx.query_string = ctx.form_data;
-	portal.debug(ctx, '[handler_uam] auth_client() query_string: ' + ctx.query_string);
+
+ 	//portal.debug(ctx, 'query_string: ' + ctx.query_string); 	
+ 	//portal.debug(ctx, 'form_data ' + ctx.form_data);
+	// NOTE: sometime query_string was null not it's { } so just force use form_data for now is good!
+	//if (!ctx.query_string)
+	ctx.query_string = ctx.form_data;
+	portal.debug(ctx, '[handler_uam] auth_client() query_string = form_data: ' + ctx.query_string);
 	
 	payload['WISPr-Logoff-URL'] = ctx.config.uam_sslurl ? ctx.config.uam_sslurl + 'logoff' :
 					sprintf('http://%s:%s/logoff', ctx.env.SERVER_ADDR, (ctx.config.uam_port || "3990"));
