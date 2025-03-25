@@ -85,13 +85,13 @@ function client_allowed(uspot, mac)
 {
 	let settings = uspots[uspot].settings;
 	let cmd = `nft -j list set inet fw4 ${settings.setname}`;
-	debug(uspot, `Checking set membership with: ${cmd}`);
+//	debug(uspot, `Checking set membership with: ${cmd}`);
 	
 	let nft = json_cmd(cmd);
 	let elem = nft?.nftables?.[1]?.set?.elem;
 	let exists = (lc(mac) in elem) ? 1 : 0;
 	
-	debug(uspot, `MAC ${mac} ${exists ? 'found' : 'not found'} in set ${settings.setname}`);
+//	debug(uspot, `MAC ${mac} ${exists ? 'found' : 'not found'} in set ${settings.setname}`);
 	return exists;
 }
 
