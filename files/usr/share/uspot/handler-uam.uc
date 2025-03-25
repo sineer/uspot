@@ -16,15 +16,25 @@ function auth_client(ctx) {
 	let password;
 	let challenge;
 	let payload = {};
-
+	
+	if (!ctx.query_string)
+		ctx.query_string = ctx.form_data;
+	portal.debug(ctx, '[handler_uam] auth_client() query_string: ' + ctx.query_string);
+	
 	payload['WISPr-Logoff-URL'] = ctx.config.uam_sslurl ? ctx.config.uam_sslurl + 'logoff' :
 					sprintf('http://%s:%s/logoff', ctx.env.SERVER_ADDR, (ctx.config.uam_port || "3990"));
-	if (ctx.query_string.username) {	// username must be set
+	if (ctx.query_string.username) {	// username must be setquery_string
 		username = ctx.query_string.username;
+
+		portal.debug(ctx, '[handler_uam] auth_client() username: ' + username);
+
+		portal.debug(ctx, '[handler_uam] auth_client() response: ' + ctx.query_string.response);
 		if (ctx.query_string.response) {	// try challenge first
 			challenge = uam.md5(ctx.config.challenge, ctx.format_mac);
 			password = ctx.query_string.response;
+			portal.debug(ctx, '[handler_uam] auth_client() challenge: ' + challenge);
 			challenge = ctx.config.uam_secret ? uam.chap_challenge(challenge, ctx.config.uam_secret) : challenge;
+			portal.debug(ctx, '[handler_uam] auth_client() after challenge: ' + challenge);
 		} else if ("password" in ctx.query_string) {	// allow empty password
 			password = !ctx.config.uam_secret ? ctx.query_string.password :
 				uam.password(uam.md5(ctx.config.challenge, ctx.format_mac), ctx.query_string.password, ctx.config.uam_secret);

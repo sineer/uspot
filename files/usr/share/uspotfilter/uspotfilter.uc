@@ -75,6 +75,27 @@ function json_cmd(cmd) {
 }
 
 /**
+ * Check if a client is already allowed
+ *
+ * @param {string} uspot the target uspot
+ * @param {string} mac the target client MAC address
+ * @returns {number} 1 if client is allowed, 0 otherwise
+ */
+function client_allowed(uspot, mac)
+{
+	let settings = uspots[uspot].settings;
+	let cmd = `nft -j list set inet fw4 ${settings.setname}`;
+	debug(uspot, `Checking set membership with: ${cmd}`);
+	
+	let nft = json_cmd(cmd);
+	let elem = nft?.nftables?.[1]?.set?.elem;
+	let exists = (lc(mac) in elem) ? 1 : 0;
+	
+	debug(uspot, `MAC ${mac} ${exists ? 'found' : 'not found'} in set ${settings.setname}`);
+	return exists;
+}
+
+/**
  * Update client firewall state.
  *
  * @param {string} uspot the target uspot
@@ -88,7 +109,18 @@ function client_state(uspot, mac, state)
 {
 	let settings = uspots[uspot].settings;
 	let op = state ? 'add' : 'delete';
-	let ret = system(`nft ${op} element inet fw4 ${settings.setname} { ${mac} }`);
+	let cmd = `nft ${op} element inet fw4 ${settings.setname} { ${mac} }`;
+	
+	debug(uspot, `Executing NFT command: ${cmd}`);
+	let ret = system(cmd);
+	debug(uspot, `NFT command exited with code ${ret}`);
+
+	// Verify MAC was added/removed
+	if (ret == 0) {
+		debug(uspot, "client_allowed?");
+		let verify = client_allowed(uspot, mac);
+		debug(uspot, `Post-operation verification: MAC ${mac} ${verify ? 'exists' : 'missing'} in set`);
+	}
 
 	if (!state) {
 		let client = uspots[uspot].clients[mac];
@@ -107,23 +139,6 @@ function client_state(uspot, mac, state)
 }
 
 /**
- * Check if a client is already allowed
- *
- * @param {string} uspot the target uspot
- * @param {string} mac the target client MAC address
- * @returns {number} 1 if client is allowed, 0 otherwise
- */
-function client_allowed(uspot, mac)
-{
-	let settings = uspots[uspot].settings;
-	let cmd = `nft -j list set inet fw4 ${settings.setname}`;
-	let nft = json_cmd(cmd);
-	let elem = nft?.nftables?.[1]?.set?.elem;
-
-	return (lc(mac) in elem) ? 1 : 0;
-}
-
-/**
  * Disallow client access to the internet
  *
  * @param {string} uspot the target uspot
@@ -131,11 +146,13 @@ function client_allowed(uspot, mac)
  */
 function client_remove(uspot, mac)
 {
-	debug(uspot, mac + ' client_remove');
+	debug(uspot, `Removing client ${mac}`);
+	debug(uspot, `Current clients: ${uspots[uspot].clients}`);
 
 	client_state(uspot, mac, 0);
 
 	delete uspots[uspot].clients[mac];
+	debug(uspot, `Client removed. Remaining clients: ${uspots[uspot].clients}`);
 }
 
 // parse netlink NEIGH messages

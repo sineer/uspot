@@ -63,8 +63,15 @@ if (!uciload) {
 }
 
 function debug(uspot, msg) {
-	if (+uspots[uspot].settings.debug)
-		ulog(LOG_DEBUG, `${uspot} ${msg}`);
+    if (uspot)
+    {
+	    if (+uspots[uspot].settings.debug)
+		    ulog(LOG_DEBUG, `${uspot} ${msg}`);
+    }
+    else
+    {
+		ulog(LOG_DEBUG, `${msg}`);
+    }
 }
 
 function format_mac(uspot, mac) {
@@ -76,6 +83,7 @@ function format_mac(uspot, mac) {
 function json_cmd(cmd, input) {
 	let inpipe;
 
+    debug("", `[json_cmd] command: ${cmd} input: ${input}`);
 	if (input != null) {
 		inpipe = fs.pipe();
 		cmd = `exec ${inpipe[1].fileno()}>&-; ${cmd} <&${inpipe[0].fileno()}`;
@@ -97,6 +105,7 @@ function json_cmd(cmd, input) {
 	} catch(e) {
 	}
 	stdout.close();
+    debug("", `[json_cmd] reply: ${reply}`);
 	return reply;
 }
 
@@ -150,6 +159,7 @@ function radius_init(uspot, mac, payload, auth) {
  * @returns {object} "radius-client" reply
  */
 function radius_call(uspot, mac, payload) {
+    debug(uspot, `[radius_call] mac: ${mac} payload: ${payload}`);
 	return json_cmd('/usr/bin/radius-client /dev/stdin', payload);
 }
 

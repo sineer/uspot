@@ -6,6 +6,8 @@
 
 import { urlencode, ENCODE_FULL } from 'lucihttp';
 
+import { ulog_open, ulog, ULOG_SYSLOG, LOG_DAEMON, LOG_DEBUG, ERR, WARN, INFO } from 'log';
+
 let ubus = require('ubus');
 let uci = require('uci').cursor();
 let config = uci.get_all('uspot');
@@ -49,20 +51,23 @@ return {
 
 	debug: function(ctx, msg) {
 		if (+ctx.config.debug)
-			this.syslog(ctx, msg);
+			ulog(LOG_DEBUG, `${ctx.env.REMOTE_ADDR} ${msg}`);
 	},
 
 	// give a client access to the internet
 	allow_client: function(ctx, redir_location) {
-		this.debug(ctx, 'allowing client');
+		this.debug(ctx, `allowing client MAC: ${ctx.mac} on uspot: ${ctx.uspot}`);
 		ctx.ubus.error();	// XXX REVISIT clear error
 		ctx.ubus.call('uspot', 'client_enable', {
 			uspot: ctx.uspot,
 			address: ctx.mac,
 		});
-
-		if (ctx.ubus.error())
+		let error = ctx.ubus.error();
+		if (error)
+		{
+			this.debug(ctx, `[UBUS RESULT] client_enable FAILED! ERROR: ${error}`);
 			include('templates/error.ut', ctx);
+    }
 		else if (redir_location)
 			include('templates/redir.ut', { redir_location });
 		else
