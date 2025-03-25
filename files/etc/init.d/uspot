@@ -5,6 +5,7 @@ START=80
 USE_PROCD=1
 PROG=/usr/share/uspot/uspot.uc
 DAS_PROG=/usr/bin/uspot-das
+PIDFILE=/var/run/uspot.pid
 
 launch_das() {
 	local uspot="$1"
@@ -24,11 +25,27 @@ add_das() {
 }
 
 start_service() {
+	logger -t uspot "Starting uspot service"
 	procd_open_instance
 	procd_set_param command "$PROG"
 	procd_set_param respawn
+	procd_set_param pidfile "$PIDFILE"
 	procd_close_instance
 
+	local pid
+	for i in $(seq 1 5); do
+		if [ -f "$PIDFILE" ]; then
+			pid=$(cat "$PIDFILE")
+			logger -t uspot "uspot service started with PID $pid"
+			break
+		elif pid=$(pidof uspot); then
+			logger -t uspot "uspot service started with PID $pid"
+			break
+		fi
+		sleep 1
+	done
+	[ -z "$pid" ] && logger -t uspot "Could not determine uspot PID after 5 seconds"
+	
 	config_load uspot
 	config_foreach add_das uspot
 }
