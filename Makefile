@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=uspot
+PKG_NAME:=ubispot
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-2.0
@@ -9,82 +9,79 @@ PKG_MAINTAINER:=Thibaut VARÈNE <hacks@slashdirt.org>
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-define Package/uspot
+define Package/ubispot
   SUBMENU:=Captive Portals
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=uspot hotspot daemon
+  TITLE:=ubispot hotspot daemon
   EXTRA_DEPENDS:=ucode (>= 2023-11-07)
   DEPENDS:=+conntrack \
 	   +libblobmsg-json +liblucihttp-ucode +libradcli +libubox +libubus +libuci \
-	   +ratelimit +uspotfilter \
+	   +ratelimit +ubispotfilter \
 	   +ucode +ucode-mod-log +ucode-mod-math +ucode-mod-nl80211 +ucode-mod-rtnl +uhttpd-mod-ucode +ucode-mod-uloop
+  CONFLICTS:=uspot
 endef
 
-define Package/uspot/description
-  This package implements a captive portal supporting click-to-continue,
-  simple credential-based as well as RADIUS authentication.
-  It is UAM capable, and has limited support for RFC5176
-  RADIUS Dynamic Authorization Extensions.
-  It is meant to be a drop-in replacement for CoovaChilli,
-  leveraging the performance and flexibility of the nftables firewall
-  without the need for extra kernel modules.
+define Package/ubispot/description
+  Ubi.tel fork of uspot with pre-configured wifi login page radius uam handler.
 endef
 
-define Package/uspot/conffiles
-/etc/config/uspot
+define Package/ubispot/conffiles
+/etc/config/ubispot
 endef
 
 
-define Package/uspot-www
+define Package/ubispot-www
   SUBMENU:=Captive Portals
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=uspot default user interface files
-  DEPENDS:=+uspot
+  TITLE:=ubispot default user interface files
+  DEPENDS:=+ubispot
   PKGARCH:=all
+  CONFLICTS:=uspot-www
 endef
 
-define Package/uspot-www/description
-  This package provides CSS and HTML templates for uspot UI.
-  This package must be installed with uspot unless a local alternative is provided.
+define Package/ubispot-www/description
+  This package provides CSS and HTML templates for ubispot UI.
+  This package must be installed with ubispot unless a local alternative is provided.
 endef
 
-define Package/uspotfilter
+define Package/ubispotfilter
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=uspot firewall interface
+  TITLE:=ubispot firewall interface
   EXTRA_DEPENDS:=ucode (>= 2023-11-07)
   DEPENDS:=+ucode +ucode-mod-log +ucode-mod-uloop +ucode-mod-rtnl +nftables-json +conntrack
   PKGARCH:=all
+  CONFLICTS:=uspotfilter
 endef
 
-define Package/uspotfilter/description
-  This package provides the nftables firewall interface to uspot.
+define Package/ubispotfilter/description
+  This package provides the nftables firewall interface to ubispot.
   It is compatible with firewall4.
 endef
 
-define Package/uspot/install
+define Package/ubispot/install
 	$(INSTALL_DIR) $(1)/usr/bin $(1)/usr/share $(1)/usr/lib/ucode $(1)/etc/init.d $(1)/etc/config
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/radius-client $(1)/usr/bin/radius-client
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/uspot-das $(1)/usr/bin/uspot-das
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ubispot-das $(1)/usr/bin/ubispot-das
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/libuam.so $(1)/usr/lib/ucode/uam.so
-	$(INSTALL_CONF) ./files/etc/config/uspot $(1)/etc/config/uspot
-	$(INSTALL_BIN) ./files/etc/init.d/uspot $(1)/etc/init.d/uspot
+	$(INSTALL_CONF) ./files/etc/config/ubispot $(1)/etc/config/ubispot
+	$(INSTALL_BIN) ./files/etc/init.d/ubispot $(1)/etc/init.d/ubispot
 	$(CP) ./files/usr/bin $(1)/usr/
-	$(CP) ./files/usr/share/uspot $(1)/usr/share/
+	$(CP) ./files/usr/share/ubispot $(1)/usr/share/
 endef
 
-define Package/uspot-www/install
-	$(CP) ./files/www-uspot $(1)/
+define Package/ubispot-www/install
+	$(CP) ./files/www-ubispot $(1)/
 endef
 
-define Package/uspotfilter/install
+define Package/ubispotfilter/install
 	$(INSTALL_DIR) $(1)/usr/share $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/etc/init.d/uspotfilter $(1)/etc/init.d/uspotfilter
-	$(CP) ./files/usr/share/uspotfilter $(1)/usr/share/
+	$(INSTALL_BIN) ./files/etc/init.d/ubispotfilter $(1)/etc/init.d/ubispotfilter
+	$(CP) ./files/usr/share/ubispotfilter $(1)/usr/share/
 endef
 
-$(eval $(call BuildPackage,uspot))
-$(eval $(call BuildPackage,uspot-www))
-$(eval $(call BuildPackage,uspotfilter))
+$(eval $(call BuildPackage,ubispot))
+$(eval $(call BuildPackage,ubispot-www))
+$(eval $(call BuildPackage,ubispotfilter))
