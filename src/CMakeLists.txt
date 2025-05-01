@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-PROJECT(uspot C)
+PROJECT(ubispot C)
 INCLUDE(GNUInstallDirs)
 ADD_DEFINITIONS(-Os -ggdb -Wall -Werror --std=gnu99 -Wmissing-declarations)
 
@@ -12,9 +12,9 @@ INSTALL(TARGETS radius-client
 	RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR}
 )
 
-ADD_EXECUTABLE(uspot-das radius-das.c)
-TARGET_LINK_LIBRARIES(uspot-das ubox ubus uci radcli)
-INSTALL(TARGETS uspot-das
+ADD_EXECUTABLE(ubispot-das radius-das.c)
+TARGET_LINK_LIBRARIES(ubispot-das ubox ubus uci radcli)
+INSTALL(TARGETS ubispot-das
 	RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR}
 )
 
