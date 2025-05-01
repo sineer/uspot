@@ -4,8 +4,8 @@ let ubus = require('ubus').connect();
 let uci = require('uci').cursor();
 
 function restart() {
-	system('/etc/init.d/uspotfilter restart');
-	system('/etc/init.d/uspot restart');
+	system('/etc/init.d/ubispotfilter restart');
+	system('/etc/init.d/ubispot restart');
 	system('/etc/init.d/uhttpd restart');
 }
 
@@ -21,13 +21,13 @@ function interfaces() {
 switch(ARGV[0]) {
 case 'dump':
 	for (let interface in interfaces()) {
-		let clients = ubus.call('uspotfilter', 'client_list', { interface });
+		let clients = ubus.call('ubispotfilter', 'client_list', { interface });
 		printf('%.J\n', clients);
 	}
 	break;
 case 'clients':
 	for (let interface in interfaces()) {
-		let clients = ubus.call('uspotfilter', 'client_list', { interface});
+		let clients = ubus.call('ubispotfilter', 'client_list', { interface});
 		let res = {};
 		let t = time();
 
