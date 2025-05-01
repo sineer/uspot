@@ -3,11 +3,11 @@
 START=18
 
 USE_PROCD=1
-PROG=/usr/share/uspotfilter/uspotfilter.uc
-PIDFILE=/var/run/uspotfilter.pid
+PROG=/usr/share/ubispotfilter/ubispotfilter.uc
+PIDFILE=/var/run/ubispotfilter.pid
 
 start_service() {
-	logger -t uspot "Starting uspotfilter service"
+	logger -t ubispot "Starting ubispotfilter service"
 	procd_open_instance
 	procd_set_param command "$PROG"
 	procd_set_param respawn
@@ -18,13 +18,13 @@ start_service() {
 	for i in $(seq 1 5); do
 		if [ -f "$PIDFILE" ]; then
 			pid=$(cat "$PIDFILE")
-			logger -t uspotfilter "uspotfilter service started with PID $pid"
+			logger -t ubispotfilter "ubispotfilter service started with PID $pid"
 			break
-		elif pid=$(pidof uspotfilter); then
-			logger -t uspotfilter "uspotfilter service started with PID $pid"
+		elif pid=$(pidof ubispotfilter); then
+			logger -t ubispotfilter "ubispotfilter service started with PID $pid"
 			break
 		fi
 		sleep 1
 	done
-	[ -z "$pid" ] && logger -t uspotfilter "Could not determine uspotfilter PID after 5 seconds"
+	[ -z "$pid" ] && logger -t ubispotfilter "Could not determine ubispotfilter PID after 5 seconds"
 }

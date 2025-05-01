@@ -3,15 +3,15 @@
 START=80
 
 USE_PROCD=1
-PROG=/usr/share/uspot/uspot.uc
-DAS_PROG=/usr/bin/uspot-das
-PIDFILE=/var/run/uspot.pid
+PROG=/usr/share/ubispot/ubispot.uc
+DAS_PROG=/usr/bin/ubispot-das
+PIDFILE=/var/run/ubispot.pid
 
 launch_das() {
-	local uspot="$1"
+	local ubispot="$1"
 
-	procd_open_instance "$uspot"
-	procd_set_param command "$DAS_PROG" -u "$uspot"
+	procd_open_instance "$ubispot"
+	procd_set_param command "$DAS_PROG" -u "$ubispot"
 	procd_set_param respawn
 	procd_close_instance
 }
@@ -25,7 +25,7 @@ add_das() {
 }
 
 start_service() {
-	logger -t uspot "Starting uspot service"
+	logger -t ubispot "Starting ubispot service"
 	procd_open_instance
 	procd_set_param command "$PROG"
 	procd_set_param respawn
@@ -36,16 +36,16 @@ start_service() {
 	for i in $(seq 1 5); do
 		if [ -f "$PIDFILE" ]; then
 			pid=$(cat "$PIDFILE")
-			logger -t uspot "uspot service started with PID $pid"
+			logger -t ubispot "ubispot service started with PID $pid"
 			break
-		elif pid=$(pidof uspot); then
-			logger -t uspot "uspot service started with PID $pid"
+		elif pid=$(pidof ubispot); then
+			logger -t ubispot "ubispot service started with PID $pid"
 			break
 		fi
 		sleep 1
 	done
-	[ -z "$pid" ] && logger -t uspot "Could not determine uspot PID after 5 seconds"
+	[ -z "$pid" ] && logger -t ubispot "Could not determine ubispot PID after 5 seconds"
 	
-	config_load uspot
-	config_foreach add_das uspot
+	config_load ubispot
+	config_foreach add_das ubispot
 }
