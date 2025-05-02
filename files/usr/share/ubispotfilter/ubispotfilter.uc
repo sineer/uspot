@@ -28,7 +28,7 @@ let devices = {};
 // setup logging
 ulog_open(ULOG_SYSLOG, LOG_DAEMON, "uspotfilter");
 
-let uciload = uci.foreach('uspot', 'uspot', (d) => {
+let uciload = uci.foreach('ubispot', 'ubispot', (d) => {
 	if (!d[".anonymous"]) {
 		let device = uci.get('network', d.interface, 'device');
 

@@ -20,7 +20,7 @@ let uspots = {};
 // setup logging
 ulog_open(ULOG_SYSLOG, LOG_DAEMON, "uspot");
 
-let uciload = uci.foreach('uspot', 'uspot', (d) => {
+let uciload = uci.foreach('ubispot', 'ubispot', (d) => {
 	if (!d[".anonymous"]) {
 		let accounting = !!(d.acct_server && d.acct_secret);
 		let device = uci.get('network', d.interface, 'device');
