@@ -1,48 +1,20 @@
-#for auth mode 'credentials', add any number of the following config entry
-#config credentials
-#	option uspot 'example'
-#	option username 'myuser'
-#	option password 'mypass'
+# UBI.TEL DEFAULT CONFIG
+# XXX update radius secrets!
+config ubispot 'captive'
+	option auth_mode 'uam'
+	option idle_timeout '600'
+	option session_timeout '0'
+	option disconnect_delay '0'
+	option interface 'captive'
+	option setname 'uspot'
+	option debug '1'
+	option auth_server '10.8.0.1'
+	option auth_port '1812'
+	option auth_secret 'testing123'
+	option acct_server '10.8.0.1'
+	option acct_port '1813'
+	option acct_secret 'testing123'
+	option das_secret 'testing123'
+	option uam_server 'http://10.8.0.1:8080'
+	option final_redirect_url 'uam'
 
-## Values provided for the options below reflect the defaults used when the option is not set.
-
-#config uspot 'example'
-#	option auth_mode ''		# one of 'uam', 'radius', 'credentials', 'click-to-continue'
-#	option idle_timeout '600'	# client is kicked when idle for more than N seconds, defaults to 600, option used if not provided by radius
-#	option session_timeout '0'	# client is kicked if connected for more than N seconds, defaults to 0, option used if not provided by radius
-#	option disconnect_delay '0'	# if set, a disconnected client will only be actually kicked after disconnect_delay seconds
-#	option interface ''		# network interface (from config/network) on which captive clients will be managed
-#	option setname ''		# firewall ipset name for client management
-#	option debug '0'		# turn on debugging output in logs
-
-# captive portal API (RFC8908) configuration:
-#	option cpa_can_extend '0'	# 'can-extend-session' is true if this option is set to '1', false otherwise
-#	option cpa_venue_url ''		# value is provided verbatim as 'venue-info-url'
-
-# for auth mode 'uam' and 'radius':
-#	option auth_server ''		# radius authentication server name or address
-#	option auth_port '1812'		# radius authentication server port
-#	option auth_secret ''		# radius authentication server password
-#	option auth_proxy ''		# radius authentication server proxy
-#	option acct_server ''		# radius accounting server name or address
-#	option acct_port '1813'		# radius accounting server port
-#	option acct_secret ''		# radius accounting server password
-#	option acct_proxy ''		# radius accounting server proxy
-#	option acct_interval ''		# radius accounting interim interval override
-#	option das_secret ''		# radius DAS secret
-#	option das_port '3799'		# radius DAS listen port
-#	option nasid ''			# radius NAS-Identitifer, UAM '&nasid='
-#	option nasmac ''		# radius Called-Station, UAM '&called='
-#	option mac_format ''		# MAC format specifier: 'aabbccddeeff', 'aa-bb-cc-dd-ee-ff', 'aa:bb:cc:dd:ee:ff' or the equivalent uppercase
-#	option location_name ''		# radius WISPr-Location-Name
-
-# for auth_mode 'uam':
-#	option uam_port '3990'		# local UAM server port
-#	option uam_secret ''		# remote UAM server password
-#	option uam_server ''		# remote UAM server base url, e.g. "https://server.example.com/" - NB: trailing slash
-#	option challenge ''		# UAM CHAP shared challenge
-#	option final_redirect_url ''	# URL the client will be redirected to upon login. Special value 'uam' enables UAM 'success/reject/logoff' redirections URLs.
-#	option mac_auth '0'		# Attempt MAC-authentication first
-#	option mac_password ''		# Password sent for MAC-auth, defaults to MAC address
-#	option mac_suffix ''		# Optional suffix appended to username for MAC-auth
-#	option uam_sslurl ''		# optional base url to local UAM SSL (requires valid SSL setup in uhttpd UAM config), e.g. "https://uspot.lan:3991/" - NB: trailing slash
