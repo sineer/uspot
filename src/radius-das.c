@@ -836,7 +836,7 @@ load_config(void)
 	if (!uci_ctx)
 		return -1;
 
-	if (uci_load(uci_ctx, "uspot", &uci_uspot) || !uci_uspot)
+	if (uci_load(uci_ctx, "ubispot", &uci_uspot) || !uci_uspot)
 		goto fail;
 
 	uci_s = uci_lookup_section(uci_ctx, uci_uspot, das.uspot);

@@ -70,6 +70,7 @@ define Package/ubispot/install
 	$(INSTALL_BIN) ./files/etc/init.d/ubispot $(1)/etc/init.d/ubispot
 	$(CP) ./files/usr/bin $(1)/usr/
 	$(CP) ./files/usr/share/ubispot $(1)/usr/share/
+	$(CP) ./files/etc/radcli $(1)/etc
 endef
 
 define Package/ubispot-www/install
