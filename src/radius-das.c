@@ -241,7 +241,7 @@ das_request_process(const struct das_request *drq)
 	if (blob_buf_init(&b, 0))
 		goto failnoblob;
 
-	if (blobmsg_add_string(&b, "uspot", das.uspot))
+	if (blobmsg_add_string(&b, "ubispot", das.uspot))
 		goto fail;
 
 	c = blobmsg_open_table(&b, "request");
@@ -304,9 +304,9 @@ das_request_process(const struct das_request *drq)
 
 	blobmsg_close_table(&b, c);
 
-	// make ubus call to uspot with prepared blobmsg
-	if (ubus_lookup_id(das.ctx, "uspot", &uspotid)) {
-		ULOG_ERR("failed to look up uspot object\n");
+	// make ubus call to ubispot with prepared blobmsg
+	if (ubus_lookup_id(das.ctx, "ubispot", &uspotid)) {
+		ULOG_ERR("failed to look up ubispot object\n");
 		goto fail;
 	}
 	if (ubus_invoke(das.ctx, uspotid, drq->uspot_method, b.head, drq->ubus_cb, &ret, 3000))
@@ -837,19 +837,31 @@ load_config(void)
 		return -1;
 
 	if (uci_load(uci_ctx, "ubispot", &uci_uspot) || !uci_uspot)
+    {
+		ULOG_ERR("failed to load ubispot config!\n");
 		goto fail;
+    }
 
 	uci_s = uci_lookup_section(uci_ctx, uci_uspot, das.uspot);
 	if (!uci_s)
+    {
+		ULOG_ERR("missing config section: %s\n", das.uspot);
 		goto fail;
+    }
 
 	str = uci_lookup_option_string(uci_ctx, uci_s, "das_secret");
 	if (!str)
+    {
+		ULOG_ERR("missing das_secret\n");
 		goto fail;
+    }
 
 	das.secret = strdup(str);
 	if (!das.secret)
+    {
+		ULOG_ERR("missing das_secret\n");
 		goto fail;
+    }
 
 	str = uci_lookup_option_string(uci_ctx, uci_s, "das_port");
 	if (!str)
@@ -857,7 +869,10 @@ load_config(void)
 
 	das.port = strdup(str);
 	if (!das.port)
+    {
+		ULOG_ERR("missing das_port\n");
 		goto fail;
+    }
 
 	ret = 0;
 fail:
@@ -892,8 +907,8 @@ fail:
 static void
 usage(const char *name)
 {
-	printf("usage: %s -u <uspot>\n"
-	       " -u <uspot>\t"	"use <uspot> configuration\n"
+	printf("usage: %s -u <ubispot>\n"
+	       " -u <uspot>\t"	"use <ubispot> configuration\n"
 	       " -h\t\t"	"show this help message\n"
 	       , name);
 }
