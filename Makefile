@@ -4,7 +4,7 @@ PKG_NAME:=ubispot
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-2.0
-PKG_MAINTAINER:=Thibaut VARÈNE <hacks@slashdirt.org>
+PKG_MAINTAINER:=J <j@ubi.tel>
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -17,7 +17,7 @@ define Package/ubispot
   EXTRA_DEPENDS:=ucode (>= 2023-11-07)
   DEPENDS:=+conntrack \
 	   +libblobmsg-json +liblucihttp-ucode +libradcli +libubox +libubus +libuci \
-	   +ubispotfilter \
+	   +ubispotfilter +ubispot-www \
 	   +ucode +ucode-mod-log +ucode-mod-math +ucode-mod-nl80211 +ucode-mod-rtnl +uhttpd-mod-ucode +ucode-mod-uloop
   CONFLICTS:=uspot
 endef
@@ -51,7 +51,7 @@ define Package/ubispotfilter
   CATEGORY:=Network
   TITLE:=ubispot firewall interface
   EXTRA_DEPENDS:=ucode (>= 2023-11-07)
-  DEPENDS:=+ucode +ucode-mod-log +ucode-mod-uloop +ucode-mod-rtnl +nftables-json +conntrack
+  DEPENDS:=+ucode +ucode-mod-log +ucode-mod-uloop +ucode-mod-rtnl +nftables-json +conntrack +ubispot
   PKGARCH:=all
   CONFLICTS:=uspotfilter
 endef
